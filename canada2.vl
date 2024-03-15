@@ -94,7 +94,7 @@
                         },
                         {
                             "data": {
-                                "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                                "url": "turbine_data.csv",
                                 "format": {
                                     "type": "csv"
                                 }
@@ -151,7 +151,7 @@
                 {
                     
                     "data": {
-                        "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                        "url": "turbine_data.csv",
                         "format": {
                             "type": "csv"
                         }
@@ -202,7 +202,7 @@
         },
         {
             "data": {
-                "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                "url": "turbine_data.csv",
                 "format": {
                     "type": "csv"
                 }
