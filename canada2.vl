@@ -1,0 +1,233 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "Map of Canada",
+    "config": {
+        "legend": {
+            "disable": true
+        }
+    },
+    "concat": [
+        {
+            "data": {
+                "url": "turbine_data.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "title": "Wind Turbine Capacity by Province",
+            "params": [
+                {
+                    "name": "highlight",
+                    "select": {"type": "point", "on": "pointerover"}
+                },
+                {"name": "select_bar_chart", "select":{"type": "point", "fields": ["province_territory"]}}
+            ],
+            "width": 150,
+            "height": 1000,
+            "transform": [
+                {
+                    "filter": "datum.province_territory != 'Yukon' && datum.province_territory != 'Northwest Territories'"
+                },
+                {
+                    "filter": {"param": "hist_select"}
+                },
+                {
+                    "filter":{"param": "height_select"}
+                    
+                }
+            ],
+            "mark": {"type": "bar", "cursor": "pointer", "fill":"#E8112D"},
+            "encoding": {
+                "y": {
+                    "field": "province_territory",
+                    "type": "nominal",
+                    "sort": {
+                        "op": "sum",
+                        "field":"turbine_rated_capacity_k_w",
+                        "order": "descending"
+                    },
+                    "title":"Province"
+                },
+                "x": {
+                    "aggregate": "sum",
+                    "field":"turbine_rated_capacity_k_w",
+                    "type": "quantitative",
+                    "title": "Power Capacity (Kilowatts)"
+                },
+                "fillOpacity": {
+                    "condition": {"param": "select_bar_chart", "value": 1},
+                    "value": 0.3
+                }
+            }
+        },
+        {
+            "vconcat": [
+                {
+                    "width": 1000,
+                    "height": 900,
+                    "title": {
+                        "text": "Wind Turnbines in the southernmost provinces of Canada",
+                        "fontSize": 20
+                    },
+                    "layer": [
+                        {
+                            "data": {
+                                "url": "canada.geojson",
+                                "format": {
+                                    "type": "json",
+                                    "property": "features"
+                                }
+                            },
+                            "transform": [
+                                {
+                                    "filter": "datum.properties.name != 'Yukon Territory' && datum.properties.name != 'Nunavut' && datum.properties.name != 'Northwest Territories'"
+                                }
+                            ],
+                            "projection": {
+                                "type": "mercator"
+                            },
+                            "mark": {
+                                "type": "geoshape",
+                                "fill": "lightgray",
+                                "stroke": "white"
+                            }
+                        },
+                        {
+                            "data": {
+                                "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                                "format": {
+                                    "type": "csv"
+                                }
+                            },
+                            "transform": [
+                                {
+                                    "filter": "datum.province_territory != 'Yukon' && datum.province_territory != 'Northwest Territories'"
+                                },
+                                {
+                                    "filter": {"param": "select_bar_chart"}
+                                },
+                                {
+                                    "filter":{"param": "hist_select"}
+                                },
+                                {
+                                    "filter":{"param": "height_select"}
+                                    
+                                }
+                            ],
+                            "projection": {
+                                "type": "mercator"
+                            },
+                            "mark": {
+                                "type": "circle",
+                                "tooltip": {
+                                    "content": "data"
+                                }
+                            },
+                            "encoding": {
+                                "longitude": {
+                                    "field": "longitude",
+                                    "type": "quantitative"
+                                },
+                                "latitude": {
+                                    "field": "latitude",
+                                    "type": "quantitative"
+                                },
+                                "color":{
+                                    "field":"commissioning_date",
+                                    "type": "temporal",
+                                    "scale":{
+                                        "scheme":"rainbow",
+                                        "domain": ["1993-01-01", "2020-01-01"]
+                                    },
+                                    "legend": {
+                                        "direction": "vertical",
+                                        "title":"Date of construction"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    
+                    "data": {
+                        "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                        "format": {
+                            "type": "csv"
+                        }
+                    },
+                    "width": 1000,
+                    "height": 100,
+                    "title": "Turbine Power Capacity Histogram",
+                    "params": [
+                        {"name": "hist_select", "select":{"type": "interval", "encodings": ["x"]}}
+                    ],
+                    
+                    "transform": [
+                        {
+                            "filter":{"param": "select_bar_chart"}
+                        },
+                        {
+                            "filter":{"param": "height_select"}
+                            
+                        }
+                      ],
+                    "mark": {
+                        "type": "bar",
+                        "binSpacing": 0,
+                        "fill":"#E8112D"
+                    },
+                    "encoding": {
+                        "x": {
+                            "bin": {
+                                "binned": false,
+                                "step": 200
+                            },
+                            "scale":{
+                                "domainMax": 4000,
+                                "domainMin": 0
+                            },
+                            "field": "turbine_rated_capacity_k_w",
+                            "title": "Turbine Power Capacity (Kilowatts)"
+                        },
+                        "y": {
+                            "aggregate": "count",
+                            "scale": {"domain":[0,1250]},
+                            "title": "Number of Wind Turbines"
+                        }
+                    }
+                }
+            ],
+            "spacing": 10
+        },
+        {
+            "data": {
+                "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "params": [
+                {
+                    "name": "height_select",
+                    "select":{"encodings": ["y"], "type": "interval"}
+                }
+            ],
+            "transform": [
+                {
+                    "filter":{"param": "select_bar_chart"}
+                },
+                {
+                    "filter":{"param": "hist_select"}
+                }
+
+            ],
+            "height": 1000,
+            "mark":{"type":"rule", "stroke":"#E8112D", "strokeOpacity":0.2},
+            "encoding": {
+                "y":{"field":"hub_height_m", "type": "quantitative", "scale":{"domainMax":140}, "title":"Turbine Height (metres)"}
+            }
+        }
+    ],
+    "spacing": 10
+}
